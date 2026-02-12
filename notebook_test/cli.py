@@ -36,10 +36,18 @@ def strip(path):
         click.echo(f'  Stripped {nb}')
 
 def _find_notebooks(path):
-    if os.path.isfile(path): return [path]
+    """Efficiently discover notebook files with optimized traversal."""
+    if os.path.isfile(path): 
+        return [path] if path.endswith('.ipynb') else []
+    
     nbs = []
-    for root, _, files in os.walk(path):
-        for f in sorted(files):
-            if f.endswith('.ipynb') and '.ipynb_checkpoints' not in root:
-                nbs.append(os.path.join(root, f))
+    for root, dirs, files in os.walk(path):
+        # Skip hidden directories and common non-notebook dirs for performance
+        dirs[:] = [d for d in dirs if not d.startswith('.') and d not in {'__pycache__', 'node_modules', '.git'}]
+        
+        # Efficiently filter and sort notebook files
+        notebook_files = sorted([f for f in files if f.endswith('.ipynb')])
+        for f in notebook_files:
+            nbs.append(os.path.join(root, f))
+    
     return nbs

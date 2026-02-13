@@ -18,6 +18,9 @@ notebook-test run notebooks/
 # Test with timeout per cell
 notebook-test run notebooks/ --timeout 60
 
+# Run notebooks in parallel (4 workers)
+notebook-test run notebooks/ -j 4
+
 # Compare outputs (regression testing)
 notebook-test diff notebook.ipynb --baseline expected/
 
